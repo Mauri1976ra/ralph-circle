@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="CEL 360">
+<title>CEL 360 - Mauricio Ramirez</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{background:#041E42;color:#F0EBE1;font-family:system-ui,-apple-system,sans-serif;font-size:14px;background-image:linear-gradient(160deg,#040f22 0%,#041E42 50%,#061830 100%);min-height:100vh}
+.w{padding:14px;max-width:1440px;margin:0 auto}
+.hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;border-bottom:1px solid rgba(201,168,76,.2);padding-bottom:12px;margin-bottom:14px}
+.logo{font-size:24px;font-weight:700;letter-spacing:.08em;color:#F0EBE1}
+.logo span{color:#C9A84C}
+.by{font-style:italic;font-size:12px;color:#E0C068;margin-top:2px}
+.sub{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#8fa3c0}
+input,select,textarea{font-family:inherit;font-size:16px;color:#F0EBE1;background:rgba(255,255,255,.08);border:1px solid rgba(201,168,76,.25);border-radius:8px;padding:8px 10px;-webkit-appearance:none;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#C9A84C}
+select option{background:#071d3f}
+input[type=number]{text-align:center}
+input[type=time]{text-align:center;width:auto}
+input[type=date]{width:auto}
+input[type=checkbox]{width:18px;height:18px;min-width:18px;accent-color:#C9A84C;cursor:pointer}
+button{font-family:inherit;-webkit-appearance:none;cursor:pointer;border:none;min-height:44px}
+.btn-gold{background:linear-gradient(135deg,#a8883c,#C9A84C);color:#041E42;border-radius:9px;padding:10px 18px;font-size:13px;font-weight:600}
+.btn-out{background:transparent;border:1px solid rgba(201,168,76,.3);color:#C9A84C;border-radius:9px;padding:8px 14px;font-size:12px}
+.btn-blue{background:rgba(74,158,255,.15);border:1px solid rgba(74,158,255,.3);color:#4A9EFF;border-radius:9px;padding:8px 14px;font-size:12px}
+.btn-red{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.3);color:#f87171;border-radius:8px;padding:5px 10px;font-size:11px;min-height:34px}
+.card{background:rgba(7,29,63,.92);border:1px solid rgba(201,168,76,.2);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.ct{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.15em;color:#E0C068;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:700px){.g2,.g3{grid-template-columns:1fr}}
+.kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:12px}
+.kpi{background:rgba(7,29,63,.9);border:1px solid rgba(201,168,76,.2);border-radius:12px;padding:12px 14px;position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#C9A84C,transparent)}
+.kl{font-size:9px;color:#8fa3c0;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px}
+.kv{font-size:22px;font-weight:600;color:#F0EBE1}
+.kv.gold{color:#C9A84C}
+.kv.green{color:#4ade80}
+.kv.red{color:#f87171}
+.ks{font-size:10px;color:#8fa3c0;margin-top:2px}
+.kinput{background:transparent;border:none;color:#F0EBE1;font-size:22px;font-weight:600;width:100%;padding:0;min-height:auto;font-family:inherit}
+.kinput:focus{outline:none;color:#C9A84C}
+.tabs{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+.tab{background:transparent;border:1px solid rgba(201,168,76,.2);color:#8fa3c0;border-radius:8px;padding:6px 14px;font-size:12px;min-height:36px}
+.tab.on{background:rgba(201,168,76,.18);border-color:#C9A84C;color:#E0C068}
+/* FILTER BAR */
+.fbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:rgba(7,29,63,.9);border:1px solid rgba(201,168,76,.2);border-radius:12px;padding:8px 12px;margin-bottom:12px}
+.fbar label{font-size:10px;color:#8fa3c0;text-transform:uppercase;letter-spacing:.1em;white-space:nowrap}
+.fbar select,.fbar input[type=date]{width:auto;min-width:100px;font-size:14px;padding:6px 8px}
+.fbtn{background:transparent;border:1px solid rgba(201,168,76,.25);color:#C9A84C;border-radius:7px;padding:5px 12px;font-size:11px;min-height:34px}
+.fbtn.on{background:rgba(201,168,76,.2);border-color:#C9A84C}
+/* BREAK TABLE */
+.break-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.break-table{width:100%;border-collapse:collapse;min-width:600px}
+.break-table th{font-size:10px;color:#8fa3c0;text-transform:uppercase;letter-spacing:.08em;padding:7px 10px;border-bottom:1px solid rgba(201,168,76,.15);text-align:left;background:#071d3f;white-space:nowrap}
+.break-table td{padding:8px 10px;border-bottom:1px solid rgba(201,168,76,.06);vertical-align:middle}
+.break-table tr:last-child td{border-bottom:none}
+.break-row-ok{background:rgba(74,222,128,.05)}
+.break-row-late{background:rgba(248,113,113,.08)}
+.break-row-out{background:rgba(251,191,36,.05)}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+.badge-ok{background:rgba(74,222,128,.14);color:#4ade80;border:1px solid rgba(74,222,128,.2)}
+.badge-late{background:rgba(248,113,113,.15);color:#f87171;border:1px solid rgba(248,113,113,.25);animation:pulse .8s infinite}
+.badge-out{background:rgba(251,191,36,.14);color:#fbbf24;border:1px solid rgba(251,191,36,.2)}
+.badge-pend{background:rgba(255,255,255,.06);color:#8fa3c0;border:1px solid rgba(255,255,255,.1)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+/* CHECKLIST */
+.cl-item{display:flex;align-items:flex-start;gap:10px;padding:9px 10px;margin-bottom:4px;background:rgba(255,255,255,.035);border-radius:8px;border:1px solid rgba(201,168,76,.07);min-height:44px}
+.cl-item.done{background:rgba(74,222,128,.06);border-color:rgba(74,222,128,.15)}
+.cl-item.done .cl-text{color:#8fa3c0;text-decoration:line-through}
+.cl-check-box{width:22px;height:22px;min-width:22px;border:2px solid rgba(201,168,76,.35);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;margin-top:1px}
+.cl-item.done .cl-check-box{background:#4ade80;border-color:#4ade80}
+.cl-check-icon{color:#041E42;font-size:13px;font-weight:700;display:none}
+.cl-item.done .cl-check-icon{display:block}
+.cl-text{font-size:12px;color:#F0EBE1;line-height:1.5;flex:1}
+.prog-bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-bottom:10px}
+.prog-fill{height:100%;background:linear-gradient(90deg,#a8883c,#C9A84C);border-radius:3px;transition:width .4s}
+/* PROJECT */
+.proj-card{background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.12);border-radius:11px;padding:12px 14px;margin-bottom:10px}
+.proj-title{font-size:15px;font-weight:600;color:#C9A84C;margin-bottom:4px}
+.proj-desc{font-size:12px;color:#8fa3c0;margin-bottom:10px;line-height:1.5}
+.proj-amb-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(201,168,76,.06);flex-wrap:wrap}
+.proj-amb-row:last-child{border-bottom:none}
+.proj-amb-name{font-size:12px;font-weight:500;flex:1;min-width:100px}
+.proj-amb-date{font-size:11px;color:#8fa3c0}
+.proj-amb-check{display:flex;align-items:center;gap:6px;flex-shrink:0}
+/* SHIP */
+.ship-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(201,168,76,.06)}
+.ship-row:last-child{border-bottom:none}
+.ship-name{font-size:13px;font-weight:500;flex:1}
+.ship-input{width:80px;font-size:16px;text-align:center;padding:6px 4px}
+/* HOURLY */
+.hour-row{display:grid;grid-template-columns:70px 1fr 90px;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid rgba(201,168,76,.06)}
+.hour-row:last-child{border-bottom:none}
+.hour-lbl{font-size:13px;color:#C9A84C;font-weight:600}
+.hour-bar-wrap{background:rgba(255,255,255,.06);border-radius:4px;height:10px;overflow:hidden}
+.hour-bar{height:100%;background:linear-gradient(90deg,#4A9EFF,#C9A84C);border-radius:4px;transition:width .3s}
+/* NOTE */
+.note-card{background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.1);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.note-dt{font-size:11px;color:#E0C068;font-weight:600;margin-bottom:5px}
+.note-txt{font-size:12px;color:#F0EBE1;line-height:1.6;white-space:pre-wrap}
+/* CHARTE */
+.chw{position:relative;width:100%}
+/* 5CS */
+.fivec-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
+@media(max-width:600px){.fivec-grid{grid-template-columns:repeat(3,1fr)}}
+.fivec{background:rgba(7,29,63,.9);border:1px solid rgba(201,168,76,.2);border-radius:11px;padding:10px 8px;text-align:center;cursor:pointer}
+.fivec.on{border-color:#C9A84C;background:rgba(201,168,76,.12)}
+.fivec-icon{font-size:20px;margin-bottom:3px}
+.fivec-title{font-size:10px;font-weight:600;color:#E0C068;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px}
+.fivec-sub{font-size:10px;color:#8fa3c0;line-height:1.3}
+/* CEL RATING */
+.cel-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(201,168,76,.06)}
+.cel-row:last-child{border-bottom:none}
+.cel-lbl{font-size:12px;color:#F0EBE1;flex:1;line-height:1.4}
+.cel-btns{display:flex;gap:6px;flex-shrink:0}
+.rbtn{width:34px;height:34px;min-height:34px;padding:0;border-radius:7px;font-size:14px;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.2);color:#8fa3c0;cursor:pointer;font-family:inherit}
+.rbtn.ok{background:rgba(74,222,128,.15);border-color:rgba(74,222,128,.3);color:#4ade80}
+.rbtn.mid{background:rgba(251,191,36,.15);border-color:rgba(251,191,36,.3);color:#fbbf24}
+.rbtn.na{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.2);color:#f87171}
+/* RECAP */
+.recap-box{background:rgba(0,0,0,.3);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:14px;font-family:'Courier New',monospace;font-size:12px;color:#F0EBE1;line-height:1.8;white-space:pre-wrap;max-height:400px;overflow-y:auto}
+/* ALERT BAR */
+.alert-bar{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#7f1d1d;border-bottom:2px solid #f87171;color:#fca5a5;font-size:13px;font-weight:500;padding:10px 16px;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.alert-bar.on{display:flex}
+.alert-close{margin-left:auto;background:none;border:none;color:#fca5a5;font-size:20px;cursor:pointer;min-height:auto;padding:0}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9998;background:#0a2550;border:1px solid #a8883c;color:#E0C068;border-radius:12px;padding:11px 20px;font-size:13px;display:none;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.6);max-width:90vw}
+#toast.on{display:block}
+.divider{display:flex;align-items:center;gap:10px;margin:14px 0 10px}
+.divider span{font-size:13px;font-weight:600;color:#C9A84C;white-space:nowrap}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(201,168,76,.2)}
+</style>
+</head>
+<body>
+
+<!-- ALERT -->
+<div class="alert-bar" id="alertBar">
+  <span>&#9201;</span>
+  <span id="alertMsg">Break tardio</span>
+  <button class="alert-close" onclick="document.getElementById('alertBar').classList.remove('on')">x</button>
+</div>
+
+<div class="w">
+
+<!-- HEADER -->
+<div class="hdr">
+  <div>
+    <div class="logo">CEL <span>360</span></div>
+    <div class="by">Mauricio Ramirez - Selling Manager</div>
+    <div class="sub">Polo Ralph Lauren - Floor Management</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <button onclick="saveAll()" class="btn-gold" style="min-height:38px;font-size:12px">Guardar todo</button>
+    <button onclick="genRecap()" class="btn-out" style="min-height:38px">Recap</button>
+    <button onclick="resetDay()" class="btn-red" style="min-height:38px;font-size:11px">Nuevo dia</button>
+    <div style="text-align:right;font-size:11px;color:#8fa3c0;line-height:1.7">
+      <div id="dDate"></div>
+      <div id="dTime" style="color:#E0C068;font-weight:600;font-size:13px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="fbar">
+  <label>Filtrar por</label>
+  <button class="fbtn on" onclick="setFP('day',this)">Hoy</button>
+  <button class="fbtn" onclick="setFP('week',this)">Semana</button>
+  <button class="fbtn" onclick="setFP('month',this)">Mes</button>
+  <input type="date" id="filtDate" onchange="setFP('custom',null)" style="width:auto;font-size:14px;padding:6px 8px">
+  <span style="color:rgba(201,168,76,.2)">|</span>
+  <label>Semana</label>
+  <select id="filtWeek" onchange="setFP('week_sel',null)" style="width:auto;min-width:80px;font-size:14px;padding:6px 8px"></select>
+</div>
+
+<!-- MAIN TABS -->
+<div class="tabs">
+  <button class="tab on" onclick="showTab('apertura',this)">Apertura</button>
+  <button class="tab" onclick="showTab('c2',this)">C2 - Turno</button>
+  <button class="tab" onclick="showTab('proyectos',this)">Proyectos</button>
+  <button class="tab" onclick="showTab('ship',this)">Ship to Home</button>
+  <button class="tab" onclick="showTab('cel360',this)">CEL 360</button>
+  <button class="tab" onclick="showTab('recap',this)">Recap</button>
+</div>
+
+<!-- ═══════════════════ APERTURA ═══════════════════ -->
+<div id="tab-apertura">
+
+  <div class="kg">
+    <div class="kpi"><div class="kl">Meta dia $</div><input class="kinput" type="number" id="kMeta" placeholder="0" oninput="calcEq()"><div class="ks">Objetivo del dia</div></div>
+    <div class="kpi"><div class="kl">Ventas $</div><input class="kinput" type="number" id="kVentas" placeholder="0" oninput="calcEq()"><div class="ks">Acumulado</div></div>
+    <div class="kpi"><div class="kl">% Meta</div><div class="kv green" id="kPct">--</div><div class="ks" id="kPctSub">--</div></div>
+    <div class="kpi"><div class="kl">Conversion %</div><input class="kinput" type="number" id="kConv" placeholder="0"><div class="ks">Clientes que compraron</div></div>
+    <div class="kpi"><div class="kl">UPT</div><input class="kinput" type="number" id="kUPT" placeholder="0.0" step="0.1"><div class="ks">Unidades por transaccion</div></div>
+    <div class="kpi"><div class="kl">SPH $</div><input class="kinput" type="number" id="kSPH" placeholder="0"><div class="ks">Sales per hour</div></div>
+    <div class="kpi"><div class="kl">ADS $</div><input class="kinput" type="number" id="kADS" placeholder="0"><div class="ks">Venta promedio</div></div>
+    <div class="kpi"><div class="kl">Safe $</div><input class="kinput" type="number" id="kSafe" placeholder="4000" oninput="checkSafe()"><div class="ks" id="kSafeSub">Target: $4,000</div></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">Sales Equation</div>
+    <div class="g3">
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Meta mes $</div><input type="number" id="eqMes" placeholder="0" oninput="calcEq()"></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Ventas acum. mes $</div><input type="number" id="eqVMes" placeholder="0" oninput="calcEq()"></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Dias restantes</div><input type="number" id="eqDias" placeholder="0" oninput="calcEq()"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px">
+      <div style="background:rgba(201,168,76,.08);border-radius:8px;padding:10px;text-align:center"><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:3px">Saldo</div><div style="font-size:18px;font-weight:600;color:#C9A84C" id="eqSaldo">--</div></div>
+      <div style="background:rgba(74,222,128,.06);border-radius:8px;padding:10px;text-align:center"><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:3px">Necesitas/dia</div><div style="font-size:18px;font-weight:600;color:#4ade80" id="eqNec">--</div></div>
+      <div style="background:rgba(96,165,250,.06);border-radius:8px;padding:10px;text-align:center"><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:3px">SPH necesario</div><div style="font-size:18px;font-weight:600;color:#60A5FA" id="eqSPH">--</div></div>
+    </div>
+  </div>
+
+  <div class="divider"><span>Checklist Apertura</span></div>
+  <div class="card">
+    <div class="ct">Progreso <span id="apProg" style="color:#C9A84C">0/0</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="apBar" style="width:0%"></div></div>
+    <div id="apChecklist"></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">Sales Rally - Puntos del dia</div>
+    <div class="g2">
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Eventos de ciudad / temporada</div><textarea id="rallyEventos" rows="2" style="font-size:14px;resize:none" placeholder="Eventos, temporada..."></textarea></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Experiencia positiva del dia anterior</div><textarea id="rallyExp" rows="2" style="font-size:14px;resize:none" placeholder="Historia del dia anterior..."></textarea></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Topic de la semana</div><textarea id="rallyTopic" rows="2" style="font-size:14px;resize:none" placeholder="Tema semanal..."></textarea></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Asset Protection</div><textarea id="rallyAP" rows="2" style="font-size:14px;resize:none" placeholder="Devoluciones 30 dias..."></textarea></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Beneficio investigado</div><textarea id="rallyBeneficio" rows="2" style="font-size:14px;resize:none" placeholder="Producto / coleccion..."></textarea></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Customer Voice</div><textarea id="rallyCVoice" rows="2" style="font-size:14px;resize:none" placeholder="Ambassador a destacar..."></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ C2 - TURNO ═══════════════════ -->
+<div id="tab-c2" style="display:none">
+
+  <div class="kg">
+    <div class="kpi"><div class="kl">Concierges</div><input class="kinput" type="number" id="c2Conc" placeholder="0"><div class="ks">Meta: 5 minimo</div></div>
+    <div class="kpi"><div class="kl">Emails</div><input class="kinput" type="number" id="c2Emails" placeholder="0"><div class="ks">Meta: 15 diarios</div></div>
+    <div class="kpi"><div class="kl">Meta hora $</div><input class="kinput" type="number" id="c2MetaH" placeholder="0"><div class="ks">Objetivo por hora</div></div>
+    <div class="kpi"><div class="kl">Ventas hora $</div><input class="kinput" type="number" id="c2VentaH" placeholder="0" oninput="calcC2()"><div class="ks">Acumulado hora</div></div>
+    <div class="kpi"><div class="kl">% Hora</div><div class="kv green" id="c2Pct">--</div><div class="ks">vs meta</div></div>
+  </div>
+
+  <!-- BREAKS -->
+  <div class="divider"><span>Control de Breaks - Con alertas automaticas</span></div>
+  <div class="card">
+    <div class="ct">Breaks del turno</div>
+    <div style="font-size:11px;color:#8fa3c0;margin-bottom:10px;line-height:1.7">
+      Ingresa el nombre, hora de salida y duracion del break. El sistema calcula cuando debe regresar y te alerta si se pasa.
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:flex-end">
+      <div style="flex:1;min-width:130px"><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:4px">Nombre empleado</div><input type="text" id="brName" placeholder="Nombre..." style="font-size:15px;padding:8px 10px"></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:4px">Hora que salio</div><input type="time" id="brOut" style="width:120px;font-size:15px;padding:8px 10px"></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:4px">Duracion</div>
+        <select id="brDur" style="width:auto;min-width:110px;font-size:15px;padding:8px 10px">
+          <option value="15">15 minutos</option>
+          <option value="30">30 minutos</option>
+          <option value="60">1 hora</option>
+        </select>
+      </div>
+      <button onclick="addBreak()" class="btn-gold" style="min-height:44px;padding:0 18px;font-size:13px">+ Agregar</button>
+    </div>
+    <div class="break-wrap">
+      <table class="break-table" id="breakTable">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Salio</th>
+            <th>Duracion</th>
+            <th>Debe regresar</th>
+            <th>Regreso</th>
+            <th>Estado</th>
+            <th>Diferencia</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="breakBody"></tbody>
+      </table>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+      <div style="font-size:11px;color:#8fa3c0;display:flex;align-items:center;gap:5px"><span class="badge badge-out">En break</span> Salio, esperando regreso</div>
+      <div style="font-size:11px;color:#8fa3c0;display:flex;align-items:center;gap:5px"><span class="badge badge-late">Tarde</span> Se paso del tiempo</div>
+      <div style="font-size:11px;color:#8fa3c0;display:flex;align-items:center;gap:5px"><span class="badge badge-ok">A tiempo</span> Regreso correctamente</div>
+    </div>
+  </div>
+
+  <!-- CHECKLIST C2 -->
+  <div class="divider"><span>Checklist C2</span></div>
+  <div class="card">
+    <div class="ct">Progreso <span id="c2Prog" style="color:#C9A84C">0/0</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="c2Bar" style="width:0%"></div></div>
+    <div id="c2Checklist"></div>
+  </div>
+
+  <!-- VENTAS POR HORA -->
+  <div class="card">
+    <div class="ct">Ventas por hora</div>
+    <div id="hourlyRows"></div>
+  </div>
+
+  <!-- GO-BACKS -->
+  <div class="card">
+    <div class="ct">Go-Backs y Estado del piso</div>
+    <div class="g3">
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Fitting Room</div><textarea id="goFR" rows="2" style="font-size:14px;resize:none" placeholder="Estado y persona responsable..."></textarea></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Cash Wrap</div><textarea id="goCW" rows="2" style="font-size:14px;resize:none" placeholder="Estado y persona responsable..."></textarea></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">BOH 1 y 2</div><textarea id="goBOH" rows="2" style="font-size:14px;resize:none" placeholder="Estado del back of house..."></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PROYECTOS ═══════════════════ -->
+<div id="tab-proyectos" style="display:none">
+
+  <div class="card">
+    <div class="ct">Nuevo proyecto del equipo</div>
+    <div class="g2" style="margin-bottom:10px">
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Nombre del proyecto</div><input type="text" id="projName" placeholder="Ej: Documento BSD, Training 5Cs..." style="font-size:15px"></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Descripcion</div><input type="text" id="projDesc" placeholder="De que se trata..." style="font-size:15px"></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Fecha limite</div><input type="date" id="projDate" style="width:auto"></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="addProject('sales')" style="background:rgba(74,158,255,.15);border:1px solid rgba(74,158,255,.3);color:#4A9EFF;border-radius:9px;padding:10px 18px;font-size:13px;font-weight:600;min-height:44px">+ Sales Ambassadors</button>
+      <button onclick="addProject('brand')" class="btn-gold" style="min-height:44px">+ Brand Ambassadors</button>
+      <button onclick="addProject('all')" class="btn-out" style="min-height:44px">+ Todo el equipo</button>
+    </div>
+  </div>
+
+  <div id="projList"></div>
+
+  <!-- CHARTS PROYECTOS -->
+  <div class="g2" id="projChartsWrap" style="display:none">
+    <div class="card">
+      <div class="ct" style="color:#4A9EFF">Sales - Progreso</div>
+      <div class="chw" style="height:200px"><canvas id="cProjSales"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ct">Brand - Progreso</div>
+      <div class="chw" style="height:200px"><canvas id="cProjBrand"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SHIP TO HOME ═══════════════════ -->
+<div id="tab-ship" style="display:none">
+
+  <div class="kg">
+    <div class="kpi"><div class="kl">Ship to Home hoy</div><div class="kv gold" id="shipHoy">0</div><div class="ks">Total del dia</div></div>
+    <div class="kpi"><div class="kl">Esta semana</div><div class="kv" id="shipSem">0</div><div class="ks">Acumulado</div></div>
+    <div class="kpi"><div class="kl">Este mes</div><div class="kv" id="shipMes">0</div><div class="ks">Acumulado</div></div>
+    <div class="kpi"><div class="kl">Top ambassador</div><div class="kv gold" id="shipTop">--</div><div class="ks" id="shipTopN">--</div></div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Registrar Ship to Home - <span id="shipDateLbl" style="color:#8fa3c0;font-weight:400;text-transform:none;letter-spacing:0;font-size:11px"></span></div>
+      <div style="margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <label style="font-size:11px;color:#8fa3c0">Fecha:</label>
+        <input type="date" id="shipDate" style="width:auto" onchange="renderShip()">
+      </div>
+      <div id="shipRows"></div>
+      <button onclick="saveShip()" class="btn-gold" style="margin-top:10px;width:100%;max-width:300px">Guardar Ship to Home</button>
+      <div id="shipMsg" style="font-size:12px;color:#4ade80;margin-top:6px;text-align:center"></div>
+    </div>
+    <div class="card">
+      <div class="ct">Tendencia Ship to Home</div>
+      <div class="chw" style="height:220px"><canvas id="cShip"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ CEL 360 ═══════════════════ -->
+<div id="tab-cel360" style="display:none">
+
+  <div class="divider"><span>Las 5 C de Ralph Lauren</span></div>
+  <div class="fivec-grid">
+    <div class="fivec" onclick="toggle5C(this,'create')"><div class="fivec-icon">&#10024;</div><div class="fivec-title">CREATE</div><div class="fivec-sub">Primera impresion menos de 2 min</div></div>
+    <div class="fivec" onclick="toggle5C(this,'connect')"><div class="fivec-icon">&#129309;</div><div class="fivec-title">CONNECT</div><div class="fivec-sub">Preguntas abiertas</div></div>
+    <div class="fivec" onclick="toggle5C(this,'convert')"><div class="fivec-icon">&#128717;</div><div class="fivec-title">CONVERT</div><div class="fivec-sub">Multiples opciones</div></div>
+    <div class="fivec" onclick="toggle5C(this,'confirm')"><div class="fivec-icon">&#9989;</div><div class="fivec-title">CONFIRM</div><div class="fivec-sub">Cierre y AUR</div></div>
+    <div class="fivec" onclick="toggle5C(this,'continue')"><div class="fivec-icon">&#8734;</div><div class="fivec-title">CONTINUE</div><div class="fivec-sub">Polo Connect</div></div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="ct" style="color:#60A5FA">Seccion A - CEL observa</div>
+      <div id="celSecA"></div>
+      <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:4px">% Meta segmento</div><input type="number" id="celPct" placeholder="0" style="font-size:15px;padding:7px 9px"></div>
+        <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:4px">Conversion</div><input type="number" id="celConv" placeholder="0" style="font-size:15px;padding:7px 9px"></div>
+        <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:4px">UPT</div><input type="number" id="celUPT" placeholder="0.0" step="0.1" style="font-size:15px;padding:7px 9px"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct" style="color:#4ade80">Seccion B - Equipo observa</div>
+      <div id="celSecB"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">Hand-off al siguiente CEL</div>
+    <textarea id="handoff" rows="4" style="font-size:14px;resize:vertical" placeholder="Resultados del segmento, observaciones, pendientes para el siguiente turno..."></textarea>
+  </div>
+</div>
+
+<!-- ═══════════════════ RECAP ═══════════════════ -->
+<div id="tab-recap" style="display:none">
+
+  <div class="card">
+    <div class="ct">Notas del dia</div>
+    <div class="g2">
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Que se vendio mas</div><textarea id="nVendido" rows="2" style="font-size:14px;resize:none" placeholder="Productos, colecciones..."></textarea></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Tallas sin stock</div><textarea id="nTallas" rows="2" style="font-size:14px;resize:none" placeholder="Tallas que no teniamos..."></textarea></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Nacionalidades</div><textarea id="nNac" rows="2" style="font-size:14px;resize:none" placeholder="Que nacionalidades visitaron?"></textarea></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Reposicion urgente</div><textarea id="nRepo" rows="2" style="font-size:14px;resize:none" placeholder="Cuartos a rellenar..."></textarea></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Momento del dia</div><textarea id="nMomento" rows="2" style="font-size:14px;resize:none" placeholder="Que paso importante?"></textarea></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Aprendizaje</div><textarea id="nAprendizaje" rows="2" style="font-size:14px;resize:none" placeholder="Que aprendimos hoy?"></textarea></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">Recap generado</div>
+    <div class="recap-box" id="recapBox">Toca "Recap" arriba para generar el resumen...</div>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      <button onclick="genRecap()" class="btn-gold">Generar recap</button>
+      <button onclick="copyRecap()" class="btn-out">Copiar</button>
+    </div>
+  </div>
+
+  <!-- HISTORIAL DE BREAKS -->
+  <div class="card">
+    <div class="ct">Historial de breaks del turno</div>
+    <div id="breakHistory"></div>
+  </div>
+</div>
+
+</div><!-- /w -->
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════
+// DATA
+// ══════════════════════════════════
+var TODAY = new Date().toISOString().slice(0,10);
+var SK = 'cel360_v1';
+
+var SALES_AMBS = ['Basilia Montes','Nancy Rodriguez','Hermes Diaz','Yolanda Barreto','Alexandra Agudelo','Reina Vilaro','Ana Corina','Andrew Clarke'];
+var BRAND_AMBS = ['Brand Ambassador 1','Brand Ambassador 2','Brand Ambassador 3','Brand Ambassador 4','Brand Ambassador 5','Brand Ambassador 6','Brand Ambassador 7','Brand Ambassador 8','Brand Ambassador 9','Brand Ambassador 10','Brand Ambassador 11','Brand Ambassador 12','Brand Ambassador 13','Brand Ambassador 14','Brand Ambassador 15'];
+
+var S = {
+  date: TODAY,
+  kpis: {},
+  rally: {},
+  apChecks: {},
+  c2Checks: {},
+  breaks: [],
+  hourly: {},
+  gobacks: {},
+  fiveC: {},
+  celA: {},
+  celB: {},
+  handoff: '',
+  notes: {},
+  projects: [],
+  ship: {},
+  celNums: {}
+};
+
+var CH = {};
+var filtPeriod = 'day';
+
+// ══════════════════════════════════
+// STORAGE
+// ══════════════════════════════════
+function saveAll(){
+  collectAll();
+  try{localStorage.setItem(SK,JSON.stringify(S));}catch(e){}
+  toast('Guardado');
+}
+function loadAll(){
+  try{
+    var d = localStorage.getItem(SK);
+    if(d){var p=JSON.parse(d);if(p.date&&p.date===TODAY){S=p;return;}}
+  }catch(e){}
+}
+function collectAll(){
+  var fields=['kMeta','kVentas','kConv','kUPT','kSPH','kADS','kSafe','eqMes','eqVMes','eqDias','c2Conc','c2Emails','c2MetaH','c2VentaH','celPct','celConv','celUPT','handoff','rallyEventos','rallyExp','rallyTopic','rallyAP','rallyBeneficio','rallyCVoice','goFR','goCW','goBOH','nVendido','nTallas','nNac','nRepo','nMomento','nAprendizaje'];
+  fields.forEach(function(id){var el=document.getElementById(id);if(el)S.kpis[id]=el.value;});
+  for(var h=8;h<=22;h++){var el=document.getElementById('hr_'+h);if(el)S.hourly[h]=el.value;}
+}
+function restoreAll(){
+  var fields=['kMeta','kVentas','kConv','kUPT','kSPH','kADS','kSafe','eqMes','eqVMes','eqDias','c2Conc','c2Emails','c2MetaH','c2VentaH','celPct','celConv','celUPT','handoff','rallyEventos','rallyExp','rallyTopic','rallyAP','rallyBeneficio','rallyCVoice','goFR','goCW','goBOH','nVendido','nTallas','nNac','nRepo','nMomento','nAprendizaje'];
+  fields.forEach(function(id){var el=document.getElementById(id);if(el&&S.kpis[id]!==undefined)el.value=S.kpis[id];});
+  for(var h=8;h<=22;h++){var el=document.getElementById('hr_'+h);if(el&&S.hourly[h])el.value=S.hourly[h];}
+  if(S.fiveC){Object.keys(S.fiveC).forEach(function(k){if(S.fiveC[k]){var els=document.querySelectorAll('.fivec');els.forEach(function(el){var oc=el.getAttribute('onclick');if(oc&&oc.indexOf("'"+k+"'")>=0)el.classList.add('on');});}});}
+  calcEq();calcC2();checkSafe();
+  renderCelRatings();
+  renderBreaks();
+  renderProjects();
+  renderShip();
+  renderShipKPIs();
+}
+
+// ══════════════════════════════════
+// FILTER
+// ══════════════════════════════════
+function setFP(p,btn){
+  filtPeriod=p;
+  document.querySelectorAll('.fbtn').forEach(function(b){b.classList.remove('on');});
+  if(btn)btn.classList.add('on');
+  renderShipKPIs();renderProjects();
+}
+function getFilterDates(){
+  var now=new Date();
+  if(filtPeriod==='day'){var d=TODAY;return{from:d,to:d};}
+  if(filtPeriod==='week'){var ws=new Date(now);ws.setDate(now.getDate()-now.getDay());return{from:ws.toISOString().slice(0,10),to:TODAY};}
+  if(filtPeriod==='month'){return{from:now.getFullYear()+'-'+(now.getMonth()<9?'0':'')+(now.getMonth()+1)+'-01',to:TODAY};}
+  if(filtPeriod==='custom'){return{from:document.getElementById('filtDate').value,to:document.getElementById('filtDate').value};}
+  return{from:'2000-01-01',to:'2099-12-31'};
+}
+
+// ══════════════════════════════════
+// CALCS
+// ══════════════════════════════════
+function calcEq(){
+  var meta=parseFloat(document.getElementById('kMeta').value)||0;
+  var ventas=parseFloat(document.getElementById('kVentas').value)||0;
+  var mes=parseFloat(document.getElementById('eqMes').value)||0;
+  var vmes=parseFloat(document.getElementById('eqVMes').value)||0;
+  var dias=parseFloat(document.getElementById('eqDias').value)||1;
+  if(meta>0){var pct=Math.round(ventas/meta*100);var el=document.getElementById('kPct');if(el){el.textContent=pct+'%';el.className='kv '+(pct>=100?'green':pct>=75?'gold':'red');document.getElementById('kPctSub').textContent='$'+ventas.toLocaleString()+' / $'+meta.toLocaleString();}}
+  if(mes>0){var saldo=Math.max(0,mes-vmes);var nec=dias>0?Math.round(saldo/dias):0;var sph=Math.round(nec/8);document.getElementById('eqSaldo').textContent='$'+saldo.toLocaleString();document.getElementById('eqNec').textContent='$'+nec.toLocaleString();document.getElementById('eqSPH').textContent='$'+sph;}
+}
+function calcC2(){
+  var meta=parseFloat(document.getElementById('c2MetaH').value)||0;
+  var act=parseFloat(document.getElementById('c2VentaH').value)||0;
+  var el=document.getElementById('c2Pct');
+  if(meta>0&&el){var p=Math.round(act/meta*100);el.textContent=p+'%';el.className='kv '+(p>=100?'green':p>=75?'gold':'red');}
+}
+function checkSafe(){
+  var v=parseFloat(document.getElementById('kSafe').value)||0;
+  var sub=document.getElementById('kSafeSub');
+  if(v===4000){if(sub){sub.textContent='OK - Safe correcto';sub.style.color='#4ade80';}}
+  else if(v>0){var d=v-4000;if(sub){sub.textContent='Diferencia: '+(d>0?'+':'')+d;sub.style.color=d>0?'#fbbf24':'#f87171';}}
+}
+
+// ══════════════════════════════════
+// CHECKLISTS
+// ══════════════════════════════════
+var CL_AP=[
+  {id:'a1',text:'Contar el Safe - $4,000 (12 cajas x $300)'},
+  {id:'a2',text:'Contar los $300 de las 12 cajas individualmente'},
+  {id:'a3',text:'Abrir cajas y poner dinero en registradoras'},
+  {id:'a4',text:'Sacar DPA de trabajadores y managers'},
+  {id:'a5',text:'Hacer Sales Equation del dia y del mes'},
+  {id:'a6',text:'Sacar SPH por ambassador'},
+  {id:'a7',text:'Documento de cajeros con recibo del safe'},
+  {id:'a8',text:'Preparar Sales Rally - recibir con energia'},
+  {id:'a9',text:'Rally: Eventos de ciudad y temporada'},
+  {id:'a10',text:'Rally: Experiencia positiva del dia anterior'},
+  {id:'a11',text:'Rally: Topic de la semana'},
+  {id:'a12',text:'Rally: Asset Protection - devoluciones 30 dias'},
+  {id:'a13',text:'Rally: Beneficio investigado del producto'},
+  {id:'a14',text:'Rally: Customer Voice'},
+  {id:'a15',text:'Rally: Asignar ubicaciones y zonas'}
+];
+var CL_C2=[
+  {id:'c1',text:'Anotar horarios de breaks por empleado'},
+  {id:'c2',text:'Revisar cajeros y cuando se van de 15 min'},
+  {id:'c3',text:'Quienes terminan el turno en la proxima hora?'},
+  {id:'c4',text:'Quienes entran al turno en la proxima hora?'},
+  {id:'c5',text:'Asignar puntos de recoger/ordenar a cajeros'},
+  {id:'c6',text:'Recordar cajeros: area LIMPIA y ORDENADA'},
+  {id:'c7',text:'Primeros 10 min: meta de la hora y resultado anterior'},
+  {id:'c8',text:'Comunicar ventas individuales por ambassador'},
+  {id:'c9',text:'Recordar: 5 concierges minimo y 15 emails diarios'},
+  {id:'c10',text:'Cajeros: Customer Voice y politica devoluciones'},
+  {id:'c11',text:'Revisar Fitting Room haciendo Figure-8'},
+  {id:'c12',text:'Revisar Go-backs Fitting Room - asignar persona'},
+  {id:'c13',text:'Revisar Go-backs Cash Wrap - asignar persona'},
+  {id:'c14',text:'Revisar BOH 1'},
+  {id:'c15',text:'Revisar BOH 2'}
+];
+
+function buildCL(contId,items,sk,progId,barId){
+  var c=document.getElementById(contId);if(!c)return;
+  c.innerHTML='';
+  if(!S[sk])S[sk]={};
+  items.forEach(function(item){
+    var done=!!(S[sk][item.id]);
+    var div=document.createElement('div');
+    div.className='cl-item'+(done?' done':'');
+    div.innerHTML='<div class="cl-check-box"><span class="cl-check-icon">&#10003;</span></div><div class="cl-text">'+item.text+'</div>';
+    div.addEventListener('click',function(){
+      done=!done;S[sk][item.id]=done;
+      div.className='cl-item'+(done?' done':'');
+      updProg(items,sk,progId,barId);
+    });
+    c.appendChild(div);
+  });
+  updProg(items,sk,progId,barId);
+}
+function updProg(items,sk,pid,bid){
+  var tot=items.length,d=0;
+  items.forEach(function(i){if(S[sk]&&S[sk][i.id])d++;});
+  var pct=tot>0?Math.round(d/tot*100):0;
+  document.getElementById(pid).textContent=d+'/'+tot;
+  document.getElementById(bid).style.width=pct+'%';
+}
+
+// ══════════════════════════════════
+// HOURLY
+// ══════════════════════════════════
+function buildHourly(){
+  var c=document.getElementById('hourlyRows');c.innerHTML='';
+  for(var h=8;h<=22;h++){
+    var val=S.hourly[h]||'';
+    var lbl=(h>12?h-12:h)+':00 '+(h>=12?'PM':'AM');
+    var div=document.createElement('div');div.className='hour-row';
+    div.innerHTML='<div class="hour-lbl">'+lbl+'</div>'+
+      '<div class="hour-bar-wrap"><div class="hour-bar" id="hb_'+h+'" style="width:0%"></div></div>'+
+      '<input type="number" id="hr_'+h+'" placeholder="$0" value="'+(val||'')+'" oninput="updHB('+h+')" style="width:90px;font-size:15px;padding:5px 4px;text-align:center">';
+    c.appendChild(div);
+    if(val)updHB(h);
+  }
+}
+function updHB(h){
+  var val=parseFloat(document.getElementById('hr_'+h).value)||0;
+  var meta=parseFloat(document.getElementById('c2MetaH').value)||1;
+  var pct=Math.min(100,Math.round(val/meta*100));
+  var b=document.getElementById('hb_'+h);if(b)b.style.width=pct+'%';
+}
+
+// ══════════════════════════════════
+// BREAKS
+// ══════════════════════════════════
+function addBreak(){
+  var name=document.getElementById('brName').value.trim();
+  var out=document.getElementById('brOut').value;
+  var dur=parseInt(document.getElementById('brDur').value)||15;
+  if(!name||!out){toast('Ingresa nombre y hora de salida');return;}
+  var back=calcBack(out,dur);
+  S.breaks.push({name:name,out:out,dur:dur,back:back,returned:'',date:TODAY});
+  document.getElementById('brName').value='';document.getElementById('brOut').value='';
+  renderBreaks();saveAll();toast('Break registrado para '+name);
+}
+
+function calcBack(outTime,dur){
+  var parts=outTime.split(':');
+  var h=parseInt(parts[0]),m=parseInt(parts[1]);
+  var total=h*60+m+dur;
+  var nh=Math.floor(total/60)%24,nm=total%60;
+  return (nh<10?'0':'')+nh+':'+(nm<10?'0':'')+nm;
+}
+
+function setReturned(idx){
+  var now=new Date();
+  var t=(now.getHours()<10?'0':'')+now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
+  S.breaks[idx].returned=t;
+  renderBreaks();saveAll();
+}
+
+function removeBreak(idx){S.breaks.splice(idx,1);renderBreaks();saveAll();}
+
+function renderBreaks(){
+  var tbody=document.getElementById('breakBody');if(!tbody)return;
+  tbody.innerHTML='';
+  var now=new Date();
+  var nowM=now.getHours()*60+now.getMinutes();
+  S.breaks.forEach(function(br,i){
+    var backM=parseInt(br.back.split(':')[0])*60+parseInt(br.back.split(':')[1]);
+    var badge,rowClass='';
+    if(br.returned){
+      var retM=parseInt(br.returned.split(':')[0])*60+parseInt(br.returned.split(':')[1]);
+      var diff=retM-backM;
+      if(diff>0){badge='<span class="badge badge-late">Tarde +'+diff+'min</span>';rowClass='break-row-late';}
+      else{badge='<span class="badge badge-ok">A tiempo</span>';rowClass='break-row-ok';}
+    } else if(nowM>backM){
+      var late=nowM-backM;
+      badge='<span class="badge badge-late">TARDE +'+late+'min</span>';rowClass='break-row-late';
+    } else {
+      badge='<span class="badge badge-out">En break</span>';rowClass='break-row-out';
+    }
+    var diff='--';
+    if(br.returned){var retM2=parseInt(br.returned.split(':')[0])*60+parseInt(br.returned.split(':')[1]);var d2=retM2-backM;diff=(d2>0?'+':'')+d2+' min';}
+    var tr=document.createElement('tr');tr.className=rowClass;
+    tr.innerHTML='<td style="font-weight:500">'+br.name+'</td>'+
+      '<td style="color:#C9A84C;font-weight:600">'+br.out+'</td>'+
+      '<td><span style="font-size:12px">'+br.dur+' min</span></td>'+
+      '<td style="color:#fbbf24;font-weight:600">'+br.back+'</td>'+
+      '<td>'+(br.returned?'<span style="color:#4ade80;font-weight:600">'+br.returned+'</span>':'<button onclick="setReturned('+i+')" style="background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);color:#4ade80;border-radius:7px;padding:5px 10px;font-size:11px;min-height:34px;cursor:pointer;font-family:inherit">Regreso</button>')+'</td>'+
+      '<td>'+badge+'</td>'+
+      '<td style="font-size:12px;color:#8fa3c0">'+diff+'</td>'+
+      '<td><button onclick="removeBreak('+i+')" class="btn-red" style="font-size:11px;padding:3px 8px;min-height:30px">x</button></td>';
+    tbody.appendChild(tr);
+  });
+  checkBreakAlerts(nowM);
+  renderBreakHistory();
+}
+
+function checkBreakAlerts(nowM){
+  var lates=[];
+  S.breaks.forEach(function(br){
+    if(!br.returned){
+      var backM=parseInt(br.back.split(':')[0])*60+parseInt(br.back.split(':')[1]);
+      if(nowM>backM+1)lates.push(br.name+' (debia regresar '+br.back+')');
+    }
+  });
+  var bar=document.getElementById('alertBar'),msg=document.getElementById('alertMsg');
+  if(lates.length){msg.textContent='TARDE: '+lates.join(' - ');bar.classList.add('on');}
+  else bar.classList.remove('on');
+}
+
+function renderBreakHistory(){
+  var c=document.getElementById('breakHistory');if(!c)return;c.innerHTML='';
+  if(!S.breaks.length){c.innerHTML='<div style="font-size:12px;color:#8fa3c0;padding:10px;text-align:center">Sin breaks registrados hoy</div>';return;}
+  S.breaks.forEach(function(br){
+    var status=br.returned?'Regreso: '+br.returned:'Pendiente';
+    var div=document.createElement('div');div.className='note-card';
+    div.innerHTML='<div class="note-dt">'+br.name+' - Break '+br.dur+' min</div>'+
+      '<div class="note-txt">Salio: '+br.out+' - Debe regresar: '+br.back+' - '+status+'</div>';
+    c.appendChild(div);
+  });
+}
+
+// ══════════════════════════════════
+// PROJECTS
+// ══════════════════════════════════
+function addProject(type){
+  var name=document.getElementById('projName').value.trim();
+  var desc=document.getElementById('projDesc').value.trim();
+  var date=document.getElementById('projDate').value;
+  if(!name){toast('Escribe el nombre del proyecto');return;}
+  var ambs=type==='sales'?SALES_AMBS:type==='brand'?BRAND_AMBS:SALES_AMBS.concat(BRAND_AMBS);
+  var checks={};ambs.forEach(function(a){checks[a]={done:false,date:''};});
+  S.projects.push({id:Date.now(),name:name,desc:desc,date:date,type:type,checks:checks});
+  document.getElementById('projName').value='';document.getElementById('projDesc').value='';
+  renderProjects();saveAll();toast('Proyecto agregado: '+name);
+}
+
+function renderProjects(){
+  var list=document.getElementById('projList');if(!list)return;
+  list.innerHTML='';
+  if(!S.projects.length){list.innerHTML='<div class="card" style="text-align:center;color:#8fa3c0;font-size:13px">No hay proyectos aun. Agrega uno arriba.</div>';document.getElementById('projChartsWrap').style.display='none';return;}
+  document.getElementById('projChartsWrap').style.display='';
+  S.projects.forEach(function(proj,pi){
+    var ambs=Object.keys(proj.checks);
+    var done=ambs.filter(function(a){return proj.checks[a]&&proj.checks[a].done;}).length;
+    var pct=ambs.length>0?Math.round(done/ambs.length*100):0;
+    var typeLabel=proj.type==='sales'?'Sales':proj.type==='brand'?'Brand':'Todo el equipo';
+    var typeColor=proj.type==='sales'?'#4A9EFF':proj.type==='brand'?'#C9A84C':'#A78BFA';
+    var div=document.createElement('div');div.className='proj-card';
+    var ambRows='';
+    ambs.forEach(function(amb){
+      var check=proj.checks[amb]||{done:false,date:''};
+      ambRows+='<div class="proj-amb-row">'+
+        '<div class="proj-amb-name">'+amb+'</div>'+
+        (check.done?'<div class="proj-amb-date">'+check.date+'</div>':'')+
+        '<div class="proj-amb-check">'+
+        '<input type="checkbox"'+(check.done?' checked':'')+' onchange="toggleProjCheck('+pi+',\''+amb.replace(/'/g,"\\'")+'\')" style="width:20px;height:20px">'+
+        '<span style="font-size:11px;color:'+(check.done?'#4ade80':'#8fa3c0')+'">'+(check.done?'Informado':'Pendiente')+'</span>'+
+        '</div></div>';
+    });
+    div.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px">'+
+      '<div><div class="proj-title">'+proj.name+'</div>'+
+      '<div class="proj-desc">'+proj.desc+(proj.date?' - Limite: '+proj.date:'')+'</div></div>'+
+      '<div style="display:flex;align-items:center;gap:8px">'+
+      '<span style="font-size:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:2px 8px;color:'+typeColor+'">'+typeLabel+'</span>'+
+      '<span style="font-size:13px;font-weight:600;color:#C9A84C">'+done+'/'+ambs.length+' ('+pct+'%)</span>'+
+      '<button onclick="removeProject('+pi+')" class="btn-red" style="min-height:30px;padding:0 8px;font-size:11px">Eliminar</button>'+
+      '</div></div>'+
+      '<div class="prog-bar"><div class="prog-fill" style="width:'+pct+'%"></div></div>'+
+      '<div id="projAmbs_'+pi+'" style="max-height:300px;overflow-y:auto">'+ambRows+'</div>';
+    list.appendChild(div);
+  });
+  buildProjCharts();
+}
+
+function toggleProjCheck(pi,amb){
+  if(!S.projects[pi])return;
+  var check=S.projects[pi].checks[amb]||{done:false,date:''};
+  check.done=!check.done;
+  check.date=check.done?TODAY:'';
+  S.projects[pi].checks[amb]=check;
+  saveAll();renderProjects();
+}
+function removeProject(pi){if(!confirm('Eliminar este proyecto?'))return;S.projects.splice(pi,1);saveAll();renderProjects();}
+
+function buildProjCharts(){
+  if(typeof Chart==='undefined')return;
+  // Aggregate all projects by ambassador
+  var salesDone={},salesTot={},brandDone={},brandTot={};
+  SALES_AMBS.forEach(function(a){salesDone[a]=0;salesTot[a]=0;});
+  BRAND_AMBS.forEach(function(a){brandDone[a]=0;brandTot[a]=0;});
+  S.projects.forEach(function(proj){
+    Object.keys(proj.checks).forEach(function(amb){
+      if(salesDone[amb]!==undefined){salesTot[amb]++;if(proj.checks[amb].done)salesDone[amb]++;}
+      if(brandDone[amb]!==undefined){brandTot[amb]++;if(proj.checks[amb].done)brandDone[amb]++;}
+    });
+  });
+  var sDone=SALES_AMBS.reduce(function(s,a){return s+salesDone[a];},0);
+  var sTot=SALES_AMBS.reduce(function(s,a){return s+salesTot[a];},0);
+  var bDone=BRAND_AMBS.reduce(function(s,a){return s+brandDone[a];},0);
+  var bTot=BRAND_AMBS.reduce(function(s,a){return s+brandTot[a];},0);
+  var sNDone=sTot-sDone,bNDone=bTot-bDone;
+  mkC('cProjSales','doughnut',{labels:['Informados','Pendientes'],datasets:[{data:[sDone,sNDone],backgroundColor:['#4ade80','rgba(248,113,113,.4)'],borderColor:'#071d3f',borderWidth:2}]},{cutout:'65%',plugins:{legend:{display:true,position:'bottom',labels:{color:'#8fa3c0',boxWidth:8,font:{size:10}}},tooltip:{callbacks:{label:function(c){return ' '+c.label+': '+c.raw;}}}}});
+  mkC('cProjBrand','doughnut',{labels:['Informados','Pendientes'],datasets:[{data:[bDone,bNDone],backgroundColor:['#C9A84C','rgba(248,113,113,.4)'],borderColor:'#071d3f',borderWidth:2}]},{cutout:'65%',plugins:{legend:{display:true,position:'bottom',labels:{color:'#8fa3c0',boxWidth:8,font:{size:10}}},tooltip:{callbacks:{label:function(c){return ' '+c.label+': '+c.raw;}}}}});
+}
+
+// ══════════════════════════════════
+// SHIP TO HOME
+// ══════════════════════════════════
+function buildShipRows(){
+  var c=document.getElementById('shipRows');if(!c)return;c.innerHTML='';
+  var date=document.getElementById('shipDate').value||TODAY;
+  var dayData=S.ship[date]||{};
+  var allAmbs=SALES_AMBS.concat(BRAND_AMBS);
+  allAmbs.forEach(function(amb){
+    var val=dayData[amb]||0;
+    var typeColor=SALES_AMBS.indexOf(amb)>=0?'#4A9EFF':'#C9A84C';
+    var div=document.createElement('div');div.className='ship-row';
+    div.innerHTML='<div class="ship-name" style="color:'+typeColor+'">'+amb+'</div>'+
+      '<input type="number" min="0" class="ship-input" id="sh_'+amb.replace(/ /g,'_')+'" value="'+(val||'')+'" placeholder="0">';
+    c.appendChild(div);
+  });
+}
+
+function saveShip(){
+  var date=document.getElementById('shipDate').value||TODAY;
+  if(!S.ship)S.ship={};
+  if(!S.ship[date])S.ship[date]={};
+  var allAmbs=SALES_AMBS.concat(BRAND_AMBS);
+  allAmbs.forEach(function(amb){
+    var el=document.getElementById('sh_'+amb.replace(/ /g,'_'));
+    var v=parseInt(el?el.value:'0')||0;
+    S.ship[date][amb]=v;
+  });
+  saveAll();renderShipKPIs();buildShipChart();
+  document.getElementById('shipMsg').textContent='Ship to Home guardado para '+date;
+  setTimeout(function(){document.getElementById('shipMsg').textContent='';},3000);
+  toast('Ship to Home guardado');
+}
+
+function renderShip(){buildShipRows();document.getElementById('shipDateLbl').textContent=document.getElementById('shipDate').value||TODAY;}
+
+function renderShipKPIs(){
+  if(!S.ship)return;
+  var today=TODAY;
+  var todayData=S.ship[today]||{};
+  var todayTotal=Object.keys(todayData).reduce(function(s,k){return s+(todayData[k]||0);},0);
+  // Week
+  var now=new Date();var ws=new Date(now);ws.setDate(now.getDate()-now.getDay());
+  var wsStr=ws.toISOString().slice(0,10);
+  var weekTotal=0;Object.keys(S.ship).forEach(function(d){if(d>=wsStr&&d<=today){var dd=S.ship[d];Object.keys(dd).forEach(function(k){weekTotal+=dd[k]||0;});}});
+  // Month
+  var msStr=now.getFullYear()+'-'+(now.getMonth()<9?'0':'')+(now.getMonth()+1)+'-01';
+  var monthTotal=0;Object.keys(S.ship).forEach(function(d){if(d>=msStr&&d<=today){var dd=S.ship[d];Object.keys(dd).forEach(function(k){monthTotal+=dd[k]||0;});}});
+  // Top
+  var ambTots={};var allAmbs=SALES_AMBS.concat(BRAND_AMBS);
+  allAmbs.forEach(function(a){ambTots[a]=0;});
+  Object.keys(S.ship).forEach(function(d){var dd=S.ship[d];Object.keys(dd).forEach(function(k){if(ambTots[k]!==undefined)ambTots[k]+=dd[k]||0;});});
+  var topAmb='--',topVal=0;Object.keys(ambTots).forEach(function(a){if(ambTots[a]>topVal){topVal=ambTots[a];topAmb=a.split(' ')[0];}});
+  document.getElementById('shipHoy').textContent=todayTotal;
+  document.getElementById('shipSem').textContent=weekTotal;
+  document.getElementById('shipMes').textContent=monthTotal;
+  document.getElementById('shipTop').textContent=topAmb;
+  document.getElementById('shipTopN').textContent=topVal+' total';
+  buildShipChart();
+}
+
+function buildShipChart(){
+  if(typeof Chart==='undefined')return;
+  var dates=Object.keys(S.ship).sort().slice(-14);
+  var totals=dates.map(function(d){var dd=S.ship[d];return Object.keys(dd).reduce(function(s,k){return s+(dd[k]||0);},0);});
+  mkC('cShip','bar',{labels:dates.map(function(d){return d.slice(5);}),datasets:[{label:'Ship to Home',data:totals,backgroundColor:'rgba(201,168,76,.5)',borderColor:'#C9A84C',borderWidth:1,borderRadius:4}]},{scales:{x:{grid:{display:false},ticks:{color:'#8fa3c0',font:{size:10}}},y:{grid:{color:'rgba(201,168,76,.07)'},beginAtZero:true,ticks:{color:'#8fa3c0'}}},plugins:{legend:{display:false}}});
+}
+
+// ══════════════════════════════════
+// CEL 360
+// ══════════════════════════════════
+var CEL_A=['Sales rally al inicio con zonas, metas y KPI','Figure-8s constantes con clientes y BA/SAs','Clientes atendidos y 5Cs aplicadas','BAs/SAs en zonas con cobertura adecuada','Consciencia total de la planta','Actualizacion KPI cada hora','Hand-off con siguiente CEL'];
+var CEL_B=['CEL da direccion clara y modela comportamientos','CEL hace Figure-8s activamente','CEL da coaching y reconocimiento oportuno','CEL demuestra consciencia total del piso','CEL fomenta colaboracion del equipo'];
+
+function renderCelRatings(){
+  buildCelSection('celSecA',CEL_A,'celA');
+  buildCelSection('celSecB',CEL_B,'celB');
+}
+function buildCelSection(cid,items,sk){
+  var c=document.getElementById(cid);if(!c)return;c.innerHTML='';
+  if(!S[sk])S[sk]={};
+  items.forEach(function(item,i){
+    var key=sk+'_'+i;var cur=S[sk][key]||'na';
+    var div=document.createElement('div');div.className='cel-row';
+    div.innerHTML='<div class="cel-lbl">'+item+'</div>'+
+      '<div class="cel-btns">'+
+      '<button class="rbtn'+(cur==='ok'?' ok':'')+'" onclick="setCel(this,\''+sk+'\',\''+key+'\',\'ok\')">&#10003;</button>'+
+      '<button class="rbtn'+(cur==='mid'?' mid':'')+'" onclick="setCel(this,\''+sk+'\',\''+key+'\',\'mid\')">&mdash;</button>'+
+      '<button class="rbtn'+(cur==='na'?' na':'')+'" onclick="setCel(this,\''+sk+'\',\''+key+'\',\'na\')">&#9679;</button>'+
+      '</div>';
+    c.appendChild(div);
+  });
+}
+function setCel(btn,sk,key,val){
+  if(!S[sk])S[sk]={};S[sk][key]=val;
+  btn.closest('.cel-row').querySelectorAll('.rbtn').forEach(function(b){b.className='rbtn';});
+  btn.className='rbtn '+val;
+}
+function toggle5C(el,k){el.classList.toggle('on');if(!S.fiveC)S.fiveC={};S.fiveC[k]=el.classList.contains('on');}
+
+// ══════════════════════════════════
+// CHARTS
+// ══════════════════════════════════
+Chart.defaults.font.family='system-ui,sans-serif';
+function mkC(id,type,data,opts){
+  var el=document.getElementById(id);if(!el)return;
+  if(CH[id]){try{CH[id].destroy();}catch(e){}}
+  try{CH[id]=new Chart(el,{type:type,data:data,options:Object.assign({responsive:true,maintainAspectRatio:false},opts)});}catch(e){}
+}
+
+// ══════════════════════════════════
+// RECAP
+// ══════════════════════════════════
+function genRecap(){
+  collectAll();
+  var d=new Date(),ds=d.toLocaleDateString('es-ES',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  var pct=document.getElementById('kPct').textContent;
+  var shipToday=Object.keys((S.ship&&S.ship[TODAY])||{}).reduce(function(s,k){return s+(S.ship[TODAY][k]||0);},0);
+  var breakSummary=S.breaks.map(function(br){return br.name+' ('+br.dur+'min, salio '+br.out+(br.returned?', regreso '+br.returned:' - PENDIENTE')+')';}).join('\n  ');
+  var lines=[
+    '=====================================',
+    '  CEL 360 - RECAP DEL TURNO',
+    '  Mauricio Ramirez - Selling Manager',
+    '  Polo Ralph Lauren',
+    '  '+ds.toUpperCase(),
+    '=====================================',
+    '',
+    'KPIs DEL DIA:',
+    '  Meta: $'+(S.kpis['kMeta']||'--')+' | Ventas: $'+(S.kpis['kVentas']||'--')+' | '+pct+' meta',
+    '  Conversion: '+(S.kpis['kConv']||'--')+'% | UPT: '+(S.kpis['kUPT']||'--')+' | SPH: $'+(S.kpis['kSPH']||'--'),
+    '  Concierges: '+(S.kpis['c2Conc']||'0')+' | Emails: '+(S.kpis['c2Emails']||'0'),
+    '  Ship to Home: '+shipToday,
+    '',
+    'SALES RALLY:',
+    '  Topic: '+(S.kpis['rallyTopic']||'--'),
+    '  Customer Voice: '+(S.kpis['rallyCVoice']||'--'),
+    '',
+    'BREAKS DEL TURNO:',
+    '  '+(breakSummary||'Sin breaks registrados'),
+    '',
+    'NOTAS:',
+    '  Vendio mas: '+(S.kpis['nVendido']||'--'),
+    '  Tallas: '+(S.kpis['nTallas']||'--'),
+    '  Naciones: '+(S.kpis['nNac']||'--'),
+    '  Reposicion: '+(S.kpis['nRepo']||'--'),
+    '  Momento del dia: '+(S.kpis['nMomento']||'--'),
+    '  Aprendizaje: '+(S.kpis['nAprendizaje']||'--'),
+    '',
+    'HAND-OFF:',
+    '  '+(S.kpis['handoff']||'--'),
+    '',
+    '====================================='
+  ];
+  document.getElementById('recapBox').textContent=lines.join('\n');
+  showTab('recap',document.querySelectorAll('.tab')[5]);
+  toast('Recap generado');
+}
+
+function copyRecap(){
+  var text=document.getElementById('recapBox').textContent;
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){toast('Copiado');});}
+  else{var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('Copiado');}
+}
+
+// ══════════════════════════════════
+// RESET
+// ══════════════════════════════════
+function resetDay(){
+  if(!confirm('Iniciar nuevo dia? Los datos de hoy se borraran.'))return;
+  S={date:TODAY,kpis:{},rally:{},apChecks:{},c2Checks:{},breaks:[],hourly:{},gobacks:{},fiveC:{},celA:{},celB:{},handoff:'',notes:{},projects:S.projects||[],ship:S.ship||{},celNums:{}};
+  saveAll();location.reload();
+}
+
+// ══════════════════════════════════
+// UI
+// ══════════════════════════════════
+function showTab(id,btn){
+  var tabs=['apertura','c2','proyectos','ship','cel360','recap'];
+  tabs.forEach(function(t){var el=document.getElementById('tab-'+t);if(el)el.style.display='none';});
+  var el=document.getElementById('tab-'+id);if(el)el.style.display='';
+  document.querySelectorAll('.tabs .tab').forEach(function(t){t.classList.remove('on');});
+  if(btn)btn.classList.add('on');
+  if(id==='ship'){renderShip();renderShipKPIs();}
+  if(id==='proyectos'){renderProjects();}
+  if(id==='recap'){renderBreakHistory();}
+}
+
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(function(){t.classList.remove('on');},3000);}
+
+function tick(){
+  var n=new Date();
+  var d=document.getElementById('dDate');var t=document.getElementById('dTime');
+  if(d)d.textContent=n.toLocaleDateString('es-ES',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+  if(t)t.textContent=n.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+// WEEK FILTER SELECT
+function buildWeekSel(){
+  var sel=document.getElementById('filtWeek');sel.innerHTML='';
+  for(var i=1;i<=52;i++){sel.insertAdjacentHTML('beforeend','<option value="S'+i+'">S'+i+'</option>');}
+}
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+loadAll();
+buildCL('apChecklist',CL_AP,'apChecks','apProg','apBar');
+buildCL('c2Checklist',CL_C2,'c2Checks','c2Prog','c2Bar');
+buildHourly();
+renderCelRatings();
+buildWeekSel();
+document.getElementById('shipDate').value=TODAY;
+document.getElementById('filtDate').value=TODAY;
+restoreAll();
+
+function tryInit(n){
+  n=n||0;
+  if(typeof Chart!=='undefined'){buildProjCharts();buildShipChart();return;}
+  if(n<30)setTimeout(function(){tryInit(n+1);},200);
+}
+tryInit();
+
+tick();setInterval(tick,1000);
+setInterval(function(){checkBreakAlerts((new Date()).getHours()*60+(new Date()).getMinutes());},30000);
+setInterval(saveAll,120000);
+</script>
+</body>
+</html>
