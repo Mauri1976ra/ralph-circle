@@ -142,7 +142,8 @@ button{font-family:inherit;-webkit-appearance:none;cursor:pointer;border:none;mi
   <button class="tab" id="tb6">Reglas</button>
   <button class="tab" id="tb7">Colecciones</button>
   <button class="tab" id="tb8">CEL 360</button>
-  <button class="tab" id="tb9">Recap</button>
+  <button class="tab" id="tb9">Obs. CEL 360</button>
+  <button class="tab" id="tb10">Recap</button>
 </div>
 
 <!-- ═══ APERTURA ═══ -->
@@ -378,8 +379,57 @@ button{font-family:inherit;-webkit-appearance:none;cursor:pointer;border:none;mi
   <div class="card"><div class="ct">Hand-off al siguiente CEL</div><textarea id="handoff" rows="4" style="font-size:14px;resize:vertical" placeholder="Resultados, observaciones, pendientes..."></textarea></div>
 </div>
 
-<!-- ═══ RECAP ═══ -->
+<!-- ═══ OBSERVACION CEL 360 ═══ -->
 <div class="sec" id="sec9">
+  <div class="card">
+    <div class="ct">Guia de observacion y coaching CEL 360</div>
+    <p style="font-size:12px;color:#8fa3c0;margin-bottom:14px;line-height:1.6">Realiza minimo 2 observaciones por turno a tus compañeros CEL. Cada una queda guardada con fecha para tu historial.</p>
+    <div class="g3">
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Nombre del CEL observado</div><input type="text" id="obsName" placeholder="Nombre..." style="font-size:15px"></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Observador / rol</div><input type="text" id="obsRole" placeholder="Tu nombre / rol" style="font-size:15px"></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Fecha</div><input type="date" id="obsDate"></div>
+    </div>
+    <div style="font-size:11px;color:#8fa3c0;margin-bottom:10px">Clave: <span style="color:#4ade80;font-weight:600">&#10003; Cumple</span> &middot; <span style="color:#fbbf24;font-weight:600">&mdash; Mejorar</span> &middot; <span style="color:#8fa3c0;font-weight:600">&#9675; No observado</span></div>
+  </div>
+
+  <div class="card">
+    <div class="ct" style="color:#60A5FA">Seccion A - Observacion de la tienda (CEL observa la tienda)</div>
+    <div id="obsSecA"></div>
+  </div>
+
+  <div class="card">
+    <div class="ct" style="color:#4ade80">Resultados del segmento CEL</div>
+    <div class="g3">
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">% a la meta</div><input type="text" id="obsPctMeta" placeholder="Ej: 85%"></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">Conversion</div><input type="text" id="obsConv" placeholder="Ej: 32%"></div>
+      <div><div style="font-size:10px;color:#8fa3c0;text-transform:uppercase;margin-bottom:5px">UPT</div><input type="text" id="obsUPT" placeholder="Ej: 1.8"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct" style="color:#C9A84C">Seccion B - El equipo observa al CEL</div>
+    <div id="obsSecB"></div>
+  </div>
+
+  <div class="card">
+    <button class="bgold" onclick="saveObservation()" style="width:100%;max-width:320px;margin-bottom:8px">Guardar observacion</button>
+    <div id="obsMsg" style="font-size:12px;color:#4ade80;text-align:center"></div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+      <div class="ct" style="margin:0">Historial de observaciones</div>
+      <div style="display:flex;gap:8px">
+        <span style="font-size:11px;color:#8fa3c0">Hoy: <b id="obsCountToday" style="color:#4ade80">0</b></span>
+        <span style="font-size:11px;color:#8fa3c0">Total: <b id="obsCountTotal" style="color:#C9A84C">0</b></span>
+      </div>
+    </div>
+    <div id="obsHistory"></div>
+  </div>
+</div>
+
+<!-- ═══ RECAP ═══ -->
+<div class="sec" id="sec10">
   <div class="card">
     <div class="ct">Notas del dia</div>
     <div class="g2">
@@ -428,7 +478,7 @@ var D = {
     'Los cajeros deben recordar la politica de devoluciones de 30 dias.',
     'Los Sales y Brand Ambassadors no pueden anotar datos de clientes en papeles. Usar notas del iPad o libreta.'
   ],
-  regRally:{}, scScores:{}
+  regRally:{}, scScores:{}, observations:[]
 };
 
 var CH = {};
@@ -439,7 +489,7 @@ var curSec = 0;
 // TABS - simple and reliable
 // ══════════════════════════════════
 function initTabs(){
-  for(var i=0;i<10;i++){
+  for(var i=0;i<11;i++){
     (function(idx){
       var btn = document.getElementById('tb'+idx);
       if(btn){
@@ -453,7 +503,7 @@ function initTabs(){
 
 function goSec(idx){
   // Hide all sections
-  for(var i=0;i<10;i++){
+  for(var i=0;i<11;i++){
     var s = document.getElementById('sec'+i);
     if(s){ s.className = 'sec'; }
     var b = document.getElementById('tb'+i);
@@ -471,6 +521,7 @@ function goSec(idx){
   if(idx===5){ renderStock(); }
   if(idx===6){ renderReglas(); }
   if(idx===7){ renderCols(); }
+  if(idx===9){ renderObsHistory(); }
 }
 
 // ══════════════════════════════════
@@ -492,6 +543,7 @@ function cargar(){
       if(p.cols){ D.cols = p.cols; }
       if(p.reglas){ D.reglas = p.reglas; }
       if(p.regRally){ D.regRally = p.regRally; }
+      if(p.observations){ D.observations = p.observations; }
       if(p.date && p.date === TODAY){
         D = p;
       }
@@ -513,6 +565,7 @@ function collect(){
 }
 
 function restore(){
+  if(!D.observations) D.observations = [];
   IDS.forEach(function(id){
     var el = document.getElementById(id);
     if(el && D.kpis[id] !== undefined){ el.value = D.kpis[id]; }
@@ -524,6 +577,8 @@ function restore(){
   calcKPI(); calcEq(); calcC2(); chkSafe(); calcPlan();
   renderBreaks();
   renderCel();
+  renderObsForm();
+  renderObsHistory();
   renderShip();
   renderStock();
   renderReglas();
@@ -1145,6 +1200,146 @@ function buildCelSec(cid,items,sk){
 }
 
 // ══════════════════════════════════
+// OBSERVACION CEL 360 (registro de coaching entre CELs)
+// ══════════════════════════════════
+var OBS_A = [
+  'Realizar sales rally al inicio del turno para alinear zonas, metas de venta y KPI durante el segmento',
+  'Estar en movimiento constante haciendo figure 8s e interactuando con clientes y BA/SAs en todas las zonas',
+  'Asegurar que los clientes estan siendo atendidos y que el modelo de las 5Cs sea aplicado por todo el equipo',
+  'Asegurar que los BAs estan zonificados y la cobertura cumple con las necesidades del negocio durante el segmento',
+  'Demostrar consciencia total del piso y aprovechar la dinamica del equipo para impulsar resultados durante el segmento',
+  'Realizar actualizacion de ventas y KPI con el equipo (una vez por hora)',
+  'Realizar el hand-off con el siguiente CEL para revisar resultados de ventas y observaciones de BA/SA'
+];
+var OBS_B = [
+  'El CEL da direccion clara al inicio del segmento y modela los comportamientos de marca',
+  'El CEL interactua con el equipo y los clientes de forma constante (no aislado); haciendo figure 8s',
+  'El CEL demuestra consciencia de todo el piso y apoya al equipo en resolver desafios con prontitud',
+  'El CEL da coaching oportuno y reconocimiento durante el segmento',
+  'El CEL fomenta la colaboracion y la dinamica positiva del equipo'
+];
+var obsScoresA = {};
+var obsScoresB = {};
+
+function buildObsSec(cid,items,scoreObj){
+  var c = document.getElementById(cid);
+  if(!c) return;
+  c.innerHTML='';
+  items.forEach(function(item,i){
+    if(scoreObj[i]===undefined) scoreObj[i]='no';
+    var cur = scoreObj[i];
+    var div=document.createElement('div');
+    div.className='celrow';
+    div.innerHTML='<div class="cellbl">'+item+'</div>'+
+      '<div class="celbtns">'+
+      '<button class="rb'+(cur==='ok'?' ok':'')+'" id="obsbtn_'+cid+'_'+i+'_ok">&#10003;</button>'+
+      '<button class="rb'+(cur==='mid'?' mid':'')+'" id="obsbtn_'+cid+'_'+i+'_mid">&mdash;</button>'+
+      '<button class="rb'+(cur==='no'?' no':'')+'" id="obsbtn_'+cid+'_'+i+'_no">&#9675;</button>'+
+      '</div>';
+    c.appendChild(div);
+    ['ok','mid','no'].forEach(function(v){
+      (function(idx2,v2){
+        var btn = document.getElementById('obsbtn_'+cid+'_'+idx2+'_'+v2);
+        if(btn){
+          btn.addEventListener('click',function(){
+            scoreObj[idx2]=v2;
+            ['ok','mid','no'].forEach(function(vv){
+              var b=document.getElementById('obsbtn_'+cid+'_'+idx2+'_'+vv);
+              if(b){ b.className='rb'+(vv===v2?' '+v2:''); }
+            });
+          });
+        }
+      })(i,v);
+    });
+  });
+}
+
+function renderObsForm(){
+  obsScoresA = {};
+  obsScoresB = {};
+  buildObsSec('obsSecA', OBS_A, obsScoresA);
+  buildObsSec('obsSecB', OBS_B, obsScoresB);
+}
+
+function saveObservation(){
+  var name = document.getElementById('obsName').value.trim();
+  var role = document.getElementById('obsRole').value.trim();
+  var date = document.getElementById('obsDate').value || TODAY;
+  if(!name){ toast('Escribe el nombre del CEL observado'); return; }
+  if(!D.observations) D.observations = [];
+  var entry = {
+    name:name, role:role, date:date,
+    pctMeta:document.getElementById('obsPctMeta').value.trim(),
+    conv:document.getElementById('obsConv').value.trim(),
+    upt:document.getElementById('obsUPT').value.trim(),
+    secA: JSON.parse(JSON.stringify(obsScoresA)),
+    secB: JSON.parse(JSON.stringify(obsScoresB)),
+    ts: Date.now()
+  };
+  D.observations.push(entry);
+  guardar();
+  document.getElementById('obsName').value='';
+  document.getElementById('obsRole').value='';
+  document.getElementById('obsPctMeta').value='';
+  document.getElementById('obsConv').value='';
+  document.getElementById('obsUPT').value='';
+  renderObsForm();
+  renderObsHistory();
+  var msg = document.getElementById('obsMsg');
+  if(msg){ msg.textContent='Observacion guardada: '+name+' - '+date; setTimeout(function(){ msg.textContent=''; },3000); }
+  toast('Observacion CEL guardada para '+name);
+}
+
+function delObservation(i){
+  if(!confirm('Eliminar esta observacion?')) return;
+  D.observations.splice(i,1);
+  guardar();
+  renderObsHistory();
+}
+
+function obsScoreSummary(scores,total){
+  var ok=0;
+  Object.keys(scores).forEach(function(k){ if(scores[k]==='ok') ok++; });
+  return ok+'/'+total+' cumple';
+}
+
+function renderObsHistory(){
+  var c = document.getElementById('obsHistory');
+  if(!c) return;
+  c.innerHTML='';
+  var list = (D.observations||[]).slice().reverse();
+  var todayCount = (D.observations||[]).filter(function(o){ return o.date===TODAY; }).length;
+  var ce = document.getElementById('obsCountToday');
+  var ct = document.getElementById('obsCountTotal');
+  if(ce) ce.textContent = todayCount;
+  if(ct) ct.textContent = (D.observations||[]).length;
+  if(!list.length){
+    c.innerHTML = '<div style="font-size:12px;color:#8fa3c0;padding:10px;text-align:center">Sin observaciones registradas aun</div>';
+    return;
+  }
+  list.forEach(function(obs){
+    var realIdx = D.observations.indexOf(obs);
+    var div = document.createElement('div');
+    div.style.cssText = 'background:rgba(255,255,255,.04);border-radius:10px;padding:12px 14px;margin-bottom:8px;border-left:3px solid #60A5FA';
+    var sumA = obsScoreSummary(obs.secA, OBS_A.length);
+    var sumB = obsScoreSummary(obs.secB, OBS_B.length);
+    var kpiStr = [];
+    if(obs.pctMeta) kpiStr.push('% Meta: '+obs.pctMeta);
+    if(obs.conv) kpiStr.push('Conv: '+obs.conv);
+    if(obs.upt) kpiStr.push('UPT: '+obs.upt);
+    div.innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:6px">'+
+      '<span style="font-size:14px;font-weight:600;color:#F0EBE1">'+obs.name+'</span>'+
+      '<span style="font-size:11px;color:#8fa3c0">'+obs.date+(obs.role?' - '+obs.role:'')+'</span>'+
+      '</div>'+
+      '<div style="font-size:11px;color:#8fa3c0;margin-bottom:4px">Seccion A (tienda): <b style="color:#60A5FA">'+sumA+'</b> &middot; Seccion B (CEL): <b style="color:#4ade80">'+sumB+'</b></div>'+
+      (kpiStr.length?'<div style="font-size:11px;color:#C9A84C;margin-bottom:6px">'+kpiStr.join(' &middot; ')+'</div>':'')+
+      '<button onclick="delObservation('+realIdx+')" style="background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.3);color:#f87171;border-radius:7px;padding:4px 10px;font-size:11px;min-height:30px;cursor:pointer;font-family:inherit">Eliminar</button>';
+    c.appendChild(div);
+  });
+}
+
+// ══════════════════════════════════
 // CHARTS
 // ══════════════════════════════════
 Chart.defaults.font.family='system-ui,sans-serif';
@@ -1203,7 +1398,7 @@ function genRecap(){
   ];
   var rb = document.getElementById('recapBox');
   if(rb) rb.textContent=lines.join('\n');
-  goSec(9);
+  goSec(10);
   toast('Recap generado');
 }
 
@@ -1234,8 +1429,8 @@ function tick(){
 }
 
 function nuevodia(){
-  if(!confirm('Nuevo dia? Los datos del dia se borran. Ship, CV, Stock y Colecciones se conservan.')) return;
-  var keep={ship:D.ship,cv:D.cv,stock:D.stock,cols:D.cols,reglas:D.reglas,regRally:{}};
+  if(!confirm('Nuevo dia? Los datos del dia se borran. Ship, CV, Stock, Colecciones y Observaciones CEL se conservan.')) return;
+  var keep={ship:D.ship,cv:D.cv,stock:D.stock,cols:D.cols,reglas:D.reglas,regRally:{},observations:D.observations};
   D=Object.assign({date:TODAY,kpis:{},apC:{},c2C:{},breaks:[],hourly:{},fiveC:{},celA:{},celB:{}},keep);
   guardar();
   location.reload();
@@ -1256,6 +1451,7 @@ document.getElementById('shDate').value=TODAY;
 document.getElementById('cvDate').value=TODAY;
 document.getElementById('scDate').value=TODAY;
 document.getElementById('colF').value=TODAY;
+document.getElementById('obsDate').value=TODAY;
 
 restore();
 tick();
